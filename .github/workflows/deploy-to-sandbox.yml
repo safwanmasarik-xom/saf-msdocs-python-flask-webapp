@@ -25,8 +25,8 @@ jobs:
     - Build    
     uses: ./.github/workflows/rwf-deploy-azure-webapp.yml
     with:
-        env: Dev
-        web-app-name: lmfc-sandbox-dev-01
+        env: Sandbox
+        web-app-name: saf-sandbox-python-flask
     secrets: 
         publish-profile: "${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_SANDBOX }}"
 
@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Add comment to pull request
         run: |
-          echo "Deployed to sandbox at https://lmfc-sandbox-dev-01.azurewebsites.net/" > comment.txt
+          echo "Deployed to sandbox at https://saf-sandbox-python-flask.azurewebsites.net/" > comment.txt
           gh pr comment $PR_URL --body "$(cat comment.txt)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
