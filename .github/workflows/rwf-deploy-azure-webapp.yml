@@ -1,0 +1,33 @@
+name: Reusable workflow Deploy to Azure Web App
+
+on:
+  workflow_call:
+    inputs:
+      web-app-name:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string 
+    secrets:
+      publish-profile:
+        required: true
+
+jobs:
+  deploy_to_web_app:
+    name: Deploy to web app ${{ inputs.web-app-name }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+    steps:
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: drop   
+        path: "${{ github.workspace }}"
+
+    - name: "Deploy Azure Web App : ${{ inputs.web-app-name }}"
+      uses: azure/webapps-deploy@v2.2.11
+      with:
+        app-name: ${{ inputs.web-app-name }}
+        publish-profile: "${{ secrets.publish-profile }}"
+        package: "${{ github.workspace }}/Application${{ github.run_id }}.zip"

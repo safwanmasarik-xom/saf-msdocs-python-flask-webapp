@@ -1,0 +1,42 @@
+name: Reusable workflow Build and upload package
+
+on:
+  workflow_call:
+    inputs:
+      checkout-ref:
+        required: false
+        default: ''
+        type: string  
+
+jobs:
+  build_upload_package:
+    name: Build python app and upload package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.1
+      with:
+        ref: ${{ inputs.checkout-ref }}
+
+    - name: Set up Python environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        architecture: x64
+
+    - name: Install requirements
+      run: |-
+        python -m venv antenv
+        source antenv/bin/activate
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      working-directory: "${{ github.workspace }}"
+
+    - name: Zip files
+      run: 7z u ${{ github.workspace }}/Application${{ github.run_id }}.zip ${{ github.workspace }}/*
+
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: drop
+        path: "${{ github.workspace }}/Application${{ github.run_id }}.zip"
